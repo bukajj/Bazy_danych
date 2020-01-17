@@ -4,15 +4,15 @@
 -- *                                 
 -- *******************************************************************************
 -- * 																		     
--- *   Nazwisko i imię:                                                          
+-- *   Nazwisko i imię:  Jadwiszczak Jakub                                                        
 -- * 																		     
 -- *******************************************************************************
 -- * 																		     
--- *   Nr indeksu:                                                               
+-- *   Nr indeksu:  98698                                                             
 -- * 																		     
 -- *******************************************************************************
 -- * 																		     
--- *   Temat projektu:                                                               
+-- *   Temat projektu: Implementacja RDB na SZBD ORACLE                                                              
 -- * 																		     
 -- *******************************************************************************
 
@@ -111,7 +111,7 @@ IsClosed BIT DEFAULT 'false'
 
 CREATE TABLE Measure (
 MeasureId INTEGER IDENTITY (1,1) CONSTRAINT Measure_PK PRIMARY KEY  NOT NULL,
-CaseId INTEGER CONSTRAINT Measure_CaseTab_FK REFERENCES CaseTab(CaseId) NOT NULL,
+CaseId INTEGER CONSTRAINT Measure_CaseTab_FK REFERENCES CaseTab(CaseId),
 Title VARCHAR(30) NOT NULL,
 Localization VARCHAR(255) NOT NULL,
 Description VARCHAR(255),
@@ -244,13 +244,13 @@ UPDATE CaseTab SET [NumberOfPeople] = (SELECT Min(NumberOfPeople) FROM EventTab)
 -- -------------------------------------------------------------------------------
 DELETE FROM Measure WHERE CaseId = (SELECT Min(CaseId) FROM CaseTab);
 
-DELETE FROM Measure WHERE CaseId in (SELECT CaseId FROM CaseTab WHERE CaseId>3);
+DELETE FROM Measure WHERE  UserId = (SELECT MAX(UserId) FROM Measure);
 
-DELETE FROM CaseTab WHERE CriticalityId in (SELECT CriticalityId FROM CaseCriticality WHERE Color in (SELECT Color FROM EventCriticality) AND CriticalityId % 2 = 1 );
+DELETE FROM CaseTab WHERE CriticalityId in (SELECT CriticalityId FROM CaseCriticality WHERE CriticalityId % 2 = 0 );
 
 DELETE FROM EventTab WHERE NumberOfPeople = (SELECT MAX(NumberOfPeople) FROM EventTab);
 
-DELETE FROM Measure WHERE CaseId in (SELECT CaseId FROM CaseTab WHERE CaseId % 2 = 0);
+DELETE FROM Measure WHERE UserId = (SELECT MIN(UserId) FROM Users) AND Executor in (SELECT ContactId FROM Contact WHERE UserId % 2 = 1);
 -- -------------------------------------------------------------------------------
 -- USUWANIE STRUKTURY BAZY DANYCH                                            
 -- -------------------------------------------------------------------------------
